@@ -1,21 +1,5 @@
 server:
   port: 8088
 spring:
-  # Config database
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/demo_cicd_github_action
-#    url: jdbc:mysql://product-service-database-ctn:3311/product-service-database
-    username: root
-    password: tungtung
-
-  # JPA/HIBERNATE
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+  profiles:
+    active: dev,stag
