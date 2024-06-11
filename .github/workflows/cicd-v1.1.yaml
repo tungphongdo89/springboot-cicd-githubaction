@@ -5,14 +5,13 @@ on:
     branches:
       - dev
       - stag
-#      - prod
 
 env:
   AWS_REGION: 'us-east-1'
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   ECR_REGISTRY: 199346865337.dkr.ecr.us-east-1.amazonaws.com/dev-demo-cicd-github-action-registry
-  REPOSITORY: dev-demo-cicd-github-action-registry  # ECR repository name, ony need to create one ECR for all of envs
+  REPOSITORY: dev-demo-cicd-github-action-registry
 
 jobs:
   build:
@@ -43,8 +42,6 @@ jobs:
             echo "ENV=dev" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
             echo "ENV=stag" >> $GITHUB_ENV
-#          elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
-#            echo "ENV=prod" >> $GITHUB_ENV
           fi
 
       - name: Build, tag, and push image to Amazon ECR
@@ -85,10 +82,6 @@ jobs:
             echo "ECS_CONTAINER_NAME=stag-ctn-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_CLUSTER_NAME=stag-cluster-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_SERVICE_NAME=stag-service-demo-cicd-github-action" >> $GITHUB_ENV
-#          elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
-#            echo "ECS_TASK_DEFINITION_NAME=your-ecs-task-definition-prod" >> $GITHUB_ENV
-#            echo "ECS_CLUSTER_NAME=your-ecs-cluster-prod" >> $GITHUB_ENV
-#            echo "ECS_SERVICE_NAME=your-ecs-service-prod" >> $GITHUB_ENV
           fi
 
       - name: Fill in the new image ID in the Amazon ECS task definition
@@ -106,26 +99,3 @@ jobs:
           service: ${{ env.ECS_SERVICE_NAME }}
           cluster: ${{ env.ECS_CLUSTER_NAME }}
           wait-for-service-stability: true
-
-#  health-check:
-#    needs: deploy
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Wait for deployment to stabilize
-#        run: sleep 30  # Adjust the sleep time as necessary to allow the app to start
-#
-#      - name: Health Check
-#        run: |
-#          URL="http://your-app-url/health-check"
-#          for i in {1..10}; do
-#            STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $URL)
-#            if [ $STATUS -eq 200 ]; then
-#              echo "Health check passed!"
-#              exit 0
-#            else
-#              echo "Health check failed with status $STATUS. Retrying in 10 seconds..."
-#              sleep 10
-#            fi
-#          done
-#          echo "Health check failed after multiple attempts."
-#          exit 1
