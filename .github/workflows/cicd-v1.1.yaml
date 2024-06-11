@@ -5,13 +5,14 @@ on:
     branches:
       - dev
       - stag
+      # - prod
 
 env:
   AWS_REGION: 'us-east-1'
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  ECR_REGISTRY: 199346865337.dkr.ecr.us-east-1.amazonaws.com
-  REPOSITORY: dev-demo-cicd-github-action-registry
+  ECR_REGISTRY: 199346865337.dkr.ecr.us-east-1.amazonaws.com  # Root ECR registry URL
+  REPOSITORY: dev-demo-cicd-github-action-registry  # ECR repository name, ensure this is created in AWS ECR
 
 jobs:
   build:
@@ -42,6 +43,8 @@ jobs:
             echo "ENV=dev" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
             echo "ENV=stag" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          #   echo "ENV=prod" >> $GITHUB_ENV
           fi
 
       - name: Build, tag, and push image to Amazon ECR
@@ -54,7 +57,7 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg ENV=$ENV .
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
   deploy:
     needs: build
@@ -82,6 +85,10 @@ jobs:
             echo "ECS_CONTAINER_NAME=stag-ctn-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_CLUSTER_NAME=stag-cluster-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_SERVICE_NAME=stag-service-demo-cicd-github-action" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          #   echo "ECS_TASK_DEFINITION_NAME=your-ecs-task-definition-prod" >> $GITHUB_ENV
+          #   echo "ECS_CLUSTER_NAME=your-ecs-cluster-prod" >> $GITHUB_ENV
+          #   echo "ECS_SERVICE_NAME=your-ecs-service-prod" >> $GITHUB_ENV
           fi
 
       - name: Fill in the new image ID in the Amazon ECS task definition
@@ -90,7 +97,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION_NAME }}
           container-name: ${{ env.ECS_CONTAINER_NAME }}
-          image: ${{ env.image }}
+          image: ${{ env.IMAGE }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
