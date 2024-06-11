@@ -78,12 +78,12 @@ jobs:
         id: determine-env-and-task-def
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "ECS_TASK_DEFINITION_NAME=dev-td-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_TASK_DEFINITION_NAME=dev-td-demo-cicd-github-action.json" >> $GITHUB_ENV
             echo "ECS_CONTAINER_NAME=dev-ctn-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_CLUSTER_NAME=dev-cluster-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_SERVICE_NAME=dev-service-demo-cicd-github-action" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
-            echo "ECS_TASK_DEFINITION_NAME=stag-td-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_TASK_DEFINITION_NAME=stag-td-demo-cicd-github-action.json" >> $GITHUB_ENV
             echo "ECS_CONTAINER_NAME=stag-ctn-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_CLUSTER_NAME=stag-cluster-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_SERVICE_NAME=stag-service-demo-cicd-github-action" >> $GITHUB_ENV
