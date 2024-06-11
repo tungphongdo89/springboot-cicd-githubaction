@@ -5,7 +5,7 @@ on:
     branches:
       - dev
       - stag
-      - prod
+#      - prod
 
 env:
   AWS_REGION: 'us-east-1'
