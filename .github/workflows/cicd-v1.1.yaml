@@ -57,7 +57,7 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg ENV=$ENV .
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
-          echo "IMAGE=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Verify IMAGE environment variable
         run: echo $IMAGE
@@ -79,12 +79,12 @@ jobs:
         id: determine-env-and-task-def
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "ECS_TASK_DEFINITION_NAME=dev-td-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_TASK_DEFINITION_NAME=dev-td-demo-cicd-github-action.json" >> $GITHUB_ENV
             echo "ECS_CONTAINER_NAME=dev-ctn-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_CLUSTER_NAME=dev-cluster-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_SERVICE_NAME=dev-service-demo-cicd-github-action" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
-            echo "ECS_TASK_DEFINITION_NAME=stag-td-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_TASK_DEFINITION_NAME=stag-td-demo-cicd-github-action.json" >> $GITHUB_ENV
             echo "ECS_CONTAINER_NAME=stag-ctn-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_CLUSTER_NAME=stag-cluster-demo-cicd-github-action" >> $GITHUB_ENV
             echo "ECS_SERVICE_NAME=stag-service-demo-cicd-github-action" >> $GITHUB_ENV
@@ -103,7 +103,7 @@ jobs:
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION_NAME }}
           container-name: ${{ env.ECS_CONTAINER_NAME }}
-          image: ${{ env.IMAGE }}
+          image: ${{ env.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
