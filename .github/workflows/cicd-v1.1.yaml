@@ -10,7 +10,7 @@ env:
   AWS_REGION: 'us-east-1'
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  ECR_REGISTRY: 199346865337.dkr.ecr.us-east-1.amazonaws.com/dev-demo-cicd-github-action-registry
+  ECR_REGISTRY: 199346865337.dkr.ecr.us-east-1.amazonaws.com
   REPOSITORY: dev-demo-cicd-github-action-registry
 
 jobs:
