@@ -59,6 +59,9 @@ jobs:
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "IMAGE=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
+      - name: Verify IMAGE environment variable
+        run: echo $IMAGE
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -90,6 +93,9 @@ jobs:
           #   echo "ECS_CLUSTER_NAME=your-ecs-cluster-prod" >> $GITHUB_ENV
           #   echo "ECS_SERVICE_NAME=your-ecs-service-prod" >> $GITHUB_ENV
           fi
+
+      - name: Verify IMAGE environment variable before render task definition
+        run: echo $IMAGE
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
