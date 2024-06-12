@@ -57,7 +57,7 @@ jobs:
           REPOSITORY: ${{ env.REPOSITORY }}
           ENV: ${{ env.ENV }}
         run: |
-          docker build --platform linux/x86_64 -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg ENV=$ENV .
+          docker build --platform=linux/arm64/v8 -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg ENV=$ENV .
           docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
