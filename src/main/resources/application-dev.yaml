@@ -2,7 +2,7 @@ spring:
   # Config database
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://dev-demo-cicd-github-action.cdjbdfaazrz0.us-east-1.rds.amazonaws.com:3306/demo_cicd_github_action
+    url: jdbc:mysql://demo-cicd-githubaction-db.cdjbdfaazrz0.us-east-1.rds.amazonaws.com:3306/dev_demo_cicd_github_action
     username: root
     password: tungtung
 
