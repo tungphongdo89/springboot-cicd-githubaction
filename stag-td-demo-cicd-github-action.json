@@ -1,15 +1,14 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:199346865337:task-definition/dev-td-demo-cicd-github-action:4",
+    "taskDefinitionArn": "arn:aws:ecs:us-east-1:199346865337:task-definition/stag-td-demo-cicd-github-action:3",
     "containerDefinitions": [
         {
-            "name": "dev-ctn-demo-cicd-github-action",
-            "image": "199346865337.dkr.ecr.us-east-1.amazonaws.com/demo-cicd-github-action-registry:918f3c8f95270dcd276fe0cc41ab837ce53ee8bf-dev",
-            "cpu": 1024,
+            "name": "stag-ctn-demo-cicd-github-action",
+            "image": "199346865337.dkr.ecr.us-east-1.amazonaws.com/demo-cicd-github-action-registry",
+            "cpu": 0,
             "memory": 1024,
-            "memoryReservation": 1024,
             "portMappings": [
                 {
-                    "name": "dev-ctn-demo-cicd-github-action",
+                    "name": "stag-ctn-demo-cicd-github-action-8088-tcp",
                     "containerPort": 8088,
                     "hostPort": 8088,
                     "protocol": "tcp",
@@ -17,30 +16,29 @@
                 }
             ],
             "essential": true,
-            "environment": [
-                {
-                    "name": "env",
-                    "value": "dev"
-                }
-            ],
+            "environment": [],
+            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
+            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/dev-td-demo-cicd-github-action",
+                    "awslogs-group": "/ecs/stag-td-demo-cicd-github-action",
                     "awslogs-create-group": "true",
                     "awslogs-region": "us-east-1",
                     "awslogs-stream-prefix": "ecs"
-                }
+                },
+                "secretOptions": []
             },
             "systemControls": []
         }
     ],
-    "family": "dev-td-demo-cicd-github-action",
+    "family": "stag-td-demo-cicd-github-action",
+    "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 4,
+    "revision": 3,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -57,7 +55,7 @@
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
         },
         {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
@@ -83,10 +81,10 @@
     "cpu": "1024",
     "memory": "2048",
     "runtimePlatform": {
-        "cpuArchitecture": "ARM64",
+        "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-12T14:09:57.353Z",
+    "registeredAt": "2024-06-12T13:56:16.212Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
     "tags": []
 }
