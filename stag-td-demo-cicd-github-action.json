@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:199346865337:task-definition/stag-td-demo-cicd-github-action:3",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/stag-td-demo-cicd-github-action:1",
     "containerDefinitions": [
         {
             "name": "stag-ctn-demo-cicd-github-action",
-            "image": "199346865337.dkr.ecr.us-east-1.amazonaws.com/demo-cicd-github-action-registry",
+            "image": "199346865337.dkr.ecr.ap-southeast-1.amazonaws.com/demo-cicd-github-action-registry",
             "cpu": 0,
             "memory": 1024,
             "portMappings": [
@@ -16,7 +16,20 @@
                 }
             ],
             "essential": true,
-            "environment": [],
+            "environment": [
+                {
+                    "name": "DB_USERNAME",
+                    "value": "root"
+                },
+                {
+                    "name": "DB_URL",
+                    "value": "jdbc:mysql://stag-demo-cicd-github-action.cda2eocaa9nf.ap-southeast-1.rds.amazonaws.com:3306/stag_demo_cicd_github_action"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "tungtung"
+                }
+            ],
             "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
@@ -26,7 +39,7 @@
                 "options": {
                     "awslogs-group": "/ecs/stag-td-demo-cicd-github-action",
                     "awslogs-create-group": "true",
-                    "awslogs-region": "us-east-1",
+                    "awslogs-region": "ap-southeast-1",
                     "awslogs-stream-prefix": "ecs"
                 },
                 "secretOptions": []
@@ -38,7 +51,7 @@
     "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 3,
+    "revision": 1,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -84,7 +97,12 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-12T13:56:16.212Z",
+    "registeredAt": "2024-06-15T14:58:28.768Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
-    "tags": []
+    "tags": [
+        {
+            "key": "stag-td-demo",
+            "value": "stag-td-demo"
+        }
+    ]
 }
