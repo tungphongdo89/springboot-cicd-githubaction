@@ -1,15 +1,15 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:us-east-1:199346865337:task-definition/dev-td-demo-cicd-github-action:4",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:1",
     "containerDefinitions": [
         {
             "name": "dev-ctn-demo-cicd-github-action",
-            "image": "199346865337.dkr.ecr.us-east-1.amazonaws.com/demo-cicd-github-action-registry:918f3c8f95270dcd276fe0cc41ab837ce53ee8bf-dev",
+            "image": "199346865337.dkr.ecr.ap-southeast-1.amazonaws.com/demo-cicd-github-action-registry",
             "cpu": 1024,
             "memory": 1024,
             "memoryReservation": 1024,
             "portMappings": [
                 {
-                    "name": "dev-ctn-demo-cicd-github-action",
+                    "name": "dev-ctn-demo-cicd-github-action-8088-tcp",
                     "containerPort": 8088,
                     "hostPort": 8088,
                     "protocol": "tcp",
@@ -19,28 +19,40 @@
             "essential": true,
             "environment": [
                 {
-                    "name": "env",
-                    "value": "dev"
+                    "name": "DB_USERNAME",
+                    "value": "root"
+                },
+                {
+                    "name": "DB_URL",
+                    "value": "jdbc:mysql://dev-demo-cicd-github-action.cda2eocaa9nf.ap-southeast-1.rds.amazonaws.com:3306/dev_demo_cicd_github_action"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "tungtung"
                 }
             ],
+            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
+            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
                     "awslogs-group": "/ecs/dev-td-demo-cicd-github-action",
                     "awslogs-create-group": "true",
-                    "awslogs-region": "us-east-1",
+                    "awslogs-region": "ap-southeast-1",
                     "awslogs-stream-prefix": "ecs"
-                }
+                },
+                "secretOptions": []
             },
             "systemControls": []
         }
     ],
     "family": "dev-td-demo-cicd-github-action",
+    "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 4,
+    "revision": 1,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -58,6 +70,9 @@
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
         },
         {
             "name": "ecs.capability.execution-role-ecr-pull"
@@ -83,10 +98,15 @@
     "cpu": "1024",
     "memory": "2048",
     "runtimePlatform": {
-        "cpuArchitecture": "ARM64",
+        "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-12T14:09:57.353Z",
+    "registeredAt": "2024-06-15T14:56:04.982Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
-    "tags": []
+    "tags": [
+        {
+            "key": "dev-td-demo",
+            "value": "dev-td-demo"
+        }
+    ]
 }
