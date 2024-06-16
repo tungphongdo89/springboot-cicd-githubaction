@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/stag-td-demo-cicd-github-action:1",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/stag-td-demo-cicd-github-action:2",
     "containerDefinitions": [
         {
             "name": "stag-ctn-demo-cicd-github-action",
@@ -51,7 +51,7 @@
     "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 1,
+    "revision": 2,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -94,15 +94,10 @@
     "cpu": "1024",
     "memory": "2048",
     "runtimePlatform": {
-        "cpuArchitecture": "X86_64",
+        "cpuArchitecture": "ARM64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-15T14:58:28.768Z",
+    "registeredAt": "2024-06-16T14:21:09.354Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
-    "tags": [
-        {
-            "key": "stag-td-demo",
-            "value": "stag-td-demo"
-        }
-    ]
+    "tags": []
 }
