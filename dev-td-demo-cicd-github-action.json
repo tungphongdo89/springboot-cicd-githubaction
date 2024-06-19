@@ -1,9 +1,9 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:9",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:13",
     "containerDefinitions": [
         {
             "name": "dev-ctn-demo-cicd-github-action",
-            "image": "199346865337.dkr.ecr.ap-southeast-1.amazonaws.com/demo-cicd-github-action-registry:7a1b624e139a889c786e3c09474e6f3d2bcf1ac4-dev",
+            "image": "199346865337.dkr.ecr.ap-southeast-1.amazonaws.com/demo-cicd-github-action-registry",
             "cpu": 0,
             "memory": 1024,
             "portMappings": [
@@ -30,12 +30,14 @@
                     "value": "tungtung"
                 }
             ],
+            "environmentFiles": [],
             "mountPoints": [],
             "volumesFrom": [],
+            "ulimits": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/",
+                    "awslogs-group": "/ecs/dev-td-demo-cicd-github-action",
                     "awslogs-create-group": "true",
                     "awslogs-region": "ap-southeast-1",
                     "awslogs-stream-prefix": "ecs"
@@ -49,7 +51,7 @@
     "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 9,
+    "revision": 13,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -95,7 +97,7 @@
         "cpuArchitecture": "ARM64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-16T14:15:05.408Z",
+    "registeredAt": "2024-06-19T14:30:47.278Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
     "tags": []
 }
