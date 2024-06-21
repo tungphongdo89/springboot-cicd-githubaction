@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:13",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:15",
     "containerDefinitions": [
         {
             "name": "dev-ctn-demo-cicd-github-action",
@@ -51,7 +51,7 @@
     "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 13,
+    "revision": 15,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -97,7 +97,7 @@
         "cpuArchitecture": "ARM64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-19T14:30:47.278Z",
+    "registeredAt": "2024-06-21T14:56:13.642Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
     "tags": []
 }
