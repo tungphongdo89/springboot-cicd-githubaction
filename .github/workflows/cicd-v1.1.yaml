@@ -118,7 +118,7 @@ jobs:
 
       - name: Health Check
         run: |
-          URL="https://dev.tungphongdo89.click/health-check"
+          URL="https://tungphongdo89.click/health-check"
           for i in {1..10}; do
             STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $URL)
             if [ $STATUS -eq 200 ]; then
