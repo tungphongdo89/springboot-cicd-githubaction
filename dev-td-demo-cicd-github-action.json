@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:20",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:23",
     "containerDefinitions": [
         {
             "name": "dev-ctn-demo-cicd-github-action",
@@ -8,7 +8,7 @@
             "memory": 1024,
             "portMappings": [
                 {
-                    "name": "dev-ctn-demo",
+                    "name": "dev-ctn-demo-cicd-github-action-8088-tcp",
                     "containerPort": 8088,
                     "hostPort": 8088,
                     "protocol": "tcp",
@@ -51,7 +51,7 @@
     "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 20,
+    "revision": 23,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -97,7 +97,7 @@
         "cpuArchitecture": "ARM64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2024-06-24T13:48:28.584Z",
+    "registeredAt": "2024-06-25T13:57:53.778Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
     "tags": []
 }
