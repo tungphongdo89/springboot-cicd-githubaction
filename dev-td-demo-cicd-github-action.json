@@ -1,0 +1,103 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:23",
+    "containerDefinitions": [
+        {
+            "name": "dev-ctn-demo-cicd-github-action",
+            "image": "199346865337.dkr.ecr.ap-southeast-1.amazonaws.com/demo-cicd-github-action-registry",
+            "cpu": 0,
+            "memory": 1024,
+            "portMappings": [
+                {
+                    "name": "dev-ctn-demo-cicd-github-action-8088-tcp",
+                    "containerPort": 8088,
+                    "hostPort": 8088,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DB_USERNAME",
+                    "value": "root"
+                },
+                {
+                    "name": "DB_URL",
+                    "value": "jdbc:mysql://dev-demo-cicd-github-action.cda2eocaa9nf.ap-southeast-1.rds.amazonaws.com:3306/dev_demo_cicd_github_action"
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "tungtung"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/dev-td-demo-cicd-github-action",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "ap-southeast-1",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "dev-td-demo-cicd-github-action",
+    "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 23,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "1024",
+    "memory": "2048",
+    "runtimePlatform": {
+        "cpuArchitecture": "ARM64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2024-06-25T13:57:53.778Z",
+    "registeredBy": "arn:aws:iam::199346865337:root",
+    "tags": []
+}

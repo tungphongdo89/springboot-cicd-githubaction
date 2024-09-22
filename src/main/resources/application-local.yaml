@@ -1,0 +1,52 @@
+spring:
+  # Config database
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo_cicd_github_action
+    username: root
+    password: tungtung
+  # JPA/HIBERNATE
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  security:
+    oauth2:
+      client:
+        registration:
+          dev-demo-github-action-cicd-credentials:
+            clientId: dev-demo-github-action-cicd-credentials
+            clientSecret: L3xOmLdcVKyqvxKzwX78nFiUACYYq4Ue
+            scope:
+              - openid
+              - profile
+              - roles
+            authorizationGrantType: client_credentials
+        provider:
+          dev-demo-github-action-cicd-credentials:
+            issuerUri: http://localhost:8180/realms/dev-demo-github-action-cicd
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8180/realms/dev-demo-github-action-cicd/protocol/openid-connect/certs
+
+jwt:
+  auth:
+    converter:
+      principle-attribute: preferred_username
+
+keycloak:
+  auth-server-url: http://localhost:8180
+  realm: dev-demo-github-action-cicd
+  admin-client-id: admin-cli
+  custom-client-id: dev-demo-github-action-cicd-credentials
+  credentials:
+    secret: qU0XwzWI2zpihGvNo4f1E1JOzfv17ISv  # Remove this line if Client authentication is off
+  admin:
+    username: admin
+    password: admin

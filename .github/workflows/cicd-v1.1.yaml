@@ -1,0 +1,133 @@
+name: Build and Deploy to AWS ECS
+
+on:
+  push:
+    branches:
+      - dev
+      # - stag
+      # - prod
+
+env:
+  AWS_REGION: 'ap-southeast-1'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ECR_REGISTRY: 199346865337.dkr.ecr.ap-southeast-1.amazonaws.com  # Root ECR registry URL
+  REPOSITORY: demo-cicd-github-action-registry  # ECR repository name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Build Project
+        run: mvn clean install -DskipTests
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+
+      - name: Determine environment
+        id: determine-env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "ENV=dev" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
+          #  echo "ENV=stag" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          #   echo "ENV=prod" >> $GITHUB_ENV
+          fi
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
+          IMAGE_TAG: ${{ github.sha }}-${{ env.ENV }}
+          REPOSITORY: ${{ env.REPOSITORY }}
+          ENV: ${{ env.ENV }}
+        run: |
+          docker build --platform=linux/arm64/v8 -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg ENV=$ENV .
+          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+
+      - name: Determine environment and task definition
+        id: determine-env-and-task-def
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "ECS_TASK_DEFINITION_NAME=dev-td-demo-cicd-github-action.json" >> $GITHUB_ENV
+            echo "ECS_CONTAINER_NAME=dev-ctn-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_CLUSTER_NAME=dev-cluster-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_SERVICE_NAME=dev-service-demo-cicd-github-action" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
+          #  echo "ECS_TASK_DEFINITION_NAME=stag-td-demo-cicd-github-action.json" >> $GITHUB_ENV
+          #  echo "ECS_CONTAINER_NAME=stag-ctn-demo-cicd-github-action" >> $GITHUB_ENV
+          #  echo "ECS_CLUSTER_NAME=stag-cluster-demo-cicd-github-action" >> $GITHUB_ENV
+          #  echo "ECS_SERVICE_NAME=stag-service-demo-cicd-github-action" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          #   echo "ECS_TASK_DEFINITION_NAME=your-ecs-task-definition-prod" >> $GITHUB_ENV
+          #   echo "ECS_CLUSTER_NAME=your-ecs-cluster-prod" >> $GITHUB_ENV
+          #   echo "ECS_SERVICE_NAME=your-ecs-service-prod" >> $GITHUB_ENV
+          fi
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION_NAME }}
+          container-name: ${{ env.ECS_CONTAINER_NAME }}
+          image: ${{ needs.build.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE_NAME }}
+          cluster: ${{ env.ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
+
+  health-check:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for deployment to stabilize
+        run: sleep 30  # Adjust the sleep time as necessary to allow the app to start
+
+      - name: Health Check
+        run: |
+          URL="https://tungphongdo89.click/health-check"
+          for i in {1..10}; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $URL)
+            if [ $STATUS -eq 200 ]; then
+              echo "Health check passed!"
+              exit 0
+            else
+              echo "Health check failed with status $STATUS. Retrying in 10 seconds..."
+              sleep 10
+            fi
+          done
+          echo "Health check failed after multiple attempts."
+          exit 1
