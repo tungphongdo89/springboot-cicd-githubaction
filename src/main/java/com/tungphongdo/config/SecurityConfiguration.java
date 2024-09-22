@@ -41,15 +41,4 @@ public class SecurityConfiguration {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(j -> j.jwtAuthenticationConverter(jwtAuthConverter)))
                 .build();
     }
-
-//    @Bean
-//    @Override
-//    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-//        return new NullAuthenticatedSessionStrategy();
-//    }
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(keycloakAuthenticationProvider());
-//    }
 }

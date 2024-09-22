@@ -39,11 +39,12 @@ public class UserController {
         // Create the user representation
         UserRepresentation user = new UserRepresentation();
         user.setUsername(userRequest.getUsername());
-        user.setEnabled(true);
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
         user.setEmail(userRequest.getEmail());
+        user.setEnabled(true);
 
         CredentialRepresentation credential = new CredentialRepresentation();
-        credential.setTemporary(false);
         credential.setType(CredentialRepresentation.PASSWORD);
         credential.setValue(userRequest.getPassword());
         credential.setTemporary(Boolean.FALSE);
@@ -64,14 +65,14 @@ public class UserController {
             userRealmResource.roles().realmLevel().add(List.of(userRole));
 
             // Assign custom client roles to user
-//            ClientResource clientResource = realmResource.clients().get(customClientId);
-            ClientRepresentation clientRepresentation = realmResource.clients().findByClientId("dev-demo-github-action-cicd-credentials").get(0);
+            ClientRepresentation clientRepresentation = realmResource.clients().findByClientId(customClientId).get(0);
             ClientResource clientResource = realmResource.clients().get(clientRepresentation.getId());
-            RoleResource clientRoleResource = clientResource.roles().get("USER");
+            RoleResource clientRoleResource = clientResource.roles().get("ADMIN");
             RoleRepresentation clientRoleRepresentation = clientRoleResource.toRepresentation();
             userRealmResource.roles().clientLevel(clientRepresentation.getId()).add(List.of(clientRoleRepresentation));
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully with role: " + userRequest.getRole());
+            return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully with role: "
+                    + userRequest.getRole());
         } else {
             return ResponseEntity.status(result.getStatus()).body("User creation failed");
         }

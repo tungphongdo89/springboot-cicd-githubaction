@@ -28,4 +28,9 @@ public class PersonController {
     public ResponseEntity<String> deletePerson(@PathVariable("id") Long id) {
         return ResponseEntity.ok(personService.deletePerson(id));
     }
+
+    @GetMapping("/test-adapter")
+    public ResponseEntity<String> testAdapterPatterns(@RequestParam("dataType") String dataType) {
+        return ResponseEntity.ok(personService.testAdapterPatterns(dataType));
+    }
 }
