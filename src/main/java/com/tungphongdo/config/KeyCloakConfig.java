@@ -1,5 +1,6 @@
 package com.tungphongdo.config;
 
+/*
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
@@ -43,3 +44,4 @@ public class KeyCloakConfig {
                 .build();
     }
 }
+*/

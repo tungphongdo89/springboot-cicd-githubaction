@@ -3,7 +3,9 @@ package com.tungphongdo.service.adapter;
 import com.tungphongdo.service.JsonDataProcessor;
 import com.tungphongdo.service.XmlService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class XmlToJsonAdapter implements JsonDataProcessor {
     private final XmlService xmlService;

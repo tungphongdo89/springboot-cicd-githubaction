@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS person (
+    ID     BIGINT       NOT NULL AUTO_INCREMENT,
+    NAME   VARCHAR(255),
+    AGE    INT,
+    PRIMARY KEY (ID)
+) ENGINE = InnoDB;
+

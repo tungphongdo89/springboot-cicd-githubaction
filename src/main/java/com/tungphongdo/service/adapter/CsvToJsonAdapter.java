@@ -3,7 +3,11 @@ package com.tungphongdo.service.adapter;
 import com.tungphongdo.service.CsvService;
 import com.tungphongdo.service.JsonDataProcessor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
+@Component
+@Primary
 @RequiredArgsConstructor
 
 public class CsvToJsonAdapter implements JsonDataProcessor {

@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - dev
-      # - stag
-      # - prod
+#      - stag
+#      - prod
 
 env:
   AWS_REGION: 'ap-southeast-1'
@@ -15,6 +15,40 @@ env:
   REPOSITORY: demo-cicd-github-action-registry  # ECR repository name
 
 jobs:
+#  sonar:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout source
+#        uses: actions/checkout@v3
+#
+#      - name: Setup Java
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'zulu'
+#          java-version: '17'
+#
+#      - name: Cache Maven packages
+#        uses: actions/cache@v3
+#        with:
+#          path: ~/.m2
+#          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            ${{ runner.os }}-maven-
+#
+#      - name: Build and Run Tests with Coverage
+#        run: mvn clean verify jacoco:report
+#
+#      - name: Run SonarQube Scan
+#        env:
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#        run: |
+#          mvn sonar:sonar \
+#            -Dsonar.projectKey=corp-report \
+#            -Dsonar.host.url=$SONAR_HOST_URL \
+#            -Dsonar.login=$SONAR_TOKEN \
+#            -Dsonar.branch.name=${GITHUB_REF##*/}
+
   build:
     runs-on: ubuntu-latest
     outputs:

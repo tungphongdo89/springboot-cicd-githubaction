@@ -14,6 +14,7 @@ import java.util.List;
 public class PersonController {
     private final PersonService personService;
 
+
     @GetMapping
     public ResponseEntity<List<Person>> getPersons() {
         return ResponseEntity.ok(personService.getPersons());
