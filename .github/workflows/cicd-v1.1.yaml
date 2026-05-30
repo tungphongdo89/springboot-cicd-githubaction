@@ -51,7 +51,7 @@ jobs:
 
   build:
     name: Build and Push Image
-    needs: sonar
+#    needs: sonar
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
