@@ -1,227 +1,167 @@
-name: Build, Scan, and Deploy to AWS ECS
+name: Build and Deploy to AWS ECS - Static key
 
 on:
   push:
     branches:
       - dev
-      - stag
-      - prod
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  id-token: write
+#      - stag
+#      - prod
 
 env:
-  AWS_REGION: ap-southeast-1
-  ECR_REPOSITORY: dev-demo-cicd-github-action-registry
-#  SONAR_PROJECT_KEY: corp-report
+  AWS_REGION: 'ap-southeast-1'
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  ECR_REGISTRY: 199346865337.dkr.ecr.ap-southeast-1.amazonaws.com  # Root ECR registry URL
+  REPOSITORY: dev-demo-cicd-github-action-registry  # ECR repository name
 
 jobs:
-#  sonar:
-#    name: SonarQube Analysis
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 20
-#
-#    steps:
-#      - name: Checkout source
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Java 17
-#        uses: actions/setup-java@v4
-#        with:
-#          distribution: temurin
-#          java-version: "17"
-#          cache: maven
-#
-#      - name: Run tests
-#        run: mvn -B clean verify
-#
-#      - name: Run SonarQube scan
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-#        run: |
-#          mvn -B sonar:sonar \
-#          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
-#          -Dsonar.host.url=$SONAR_HOST_URL \
-#          -Dsonar.login=$SONAR_TOKEN \
-#          -Dsonar.branch.name=${{ github.ref_name }} \
-#          -Dsonar.qualitygate.wait=true
+  #  sonar:
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - name: Checkout source
+  #        uses: actions/checkout@v3
+  #
+  #      - name: Setup Java
+  #        uses: actions/setup-java@v3
+  #        with:
+  #          distribution: 'zulu'
+  #          java-version: '17'
+  #
+  #      - name: Cache Maven packages
+  #        uses: actions/cache@v3
+  #        with:
+  #          path: ~/.m2
+  #          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+  #          restore-keys: |
+  #            ${{ runner.os }}-maven-
+  #
+  #      - name: Build and Run Tests with Coverage
+  #        run: mvn clean verify jacoco:report
+  #
+  #      - name: Run SonarQube Scan
+  #        env:
+  #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  #        run: |
+  #          mvn sonar:sonar \
+  #            -Dsonar.projectKey=corp-report \
+  #            -Dsonar.host.url=$SONAR_HOST_URL \
+  #            -Dsonar.login=$SONAR_TOKEN \
+  #            -Dsonar.branch.name=${GITHUB_REF##*/}
 
   build:
-    name: Build and Push Image
-#    needs: sonar
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-
     outputs:
-      image: ${{ steps.meta.outputs.image }}
-      env_name: ${{ steps.vars.outputs.env_name }}
-      ecr_registry: ${{ steps.login-ecr.outputs.registry }}
-
+      image: ${{ steps.build-image.outputs.image }}
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
-          distribution: temurin
-          java-version: "17"
-          cache: maven
+          distribution: 'zulu'
+          java-version: '17'
 
-      - name: Build application jar
-        run: mvn -B clean package -DskipTests
-
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+      - name: Build Project
+        run: mvn clean install -DskipTests
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
 
-      - name: Resolve environment
-        id: vars
-        shell: bash
+      - name: Determine environment
+        id: determine-env
         run: |
-          case "${{ github.ref_name }}" in
-            dev)
-              echo "env_name=dev" >> "$GITHUB_OUTPUT"
-              ;;
-            stag)
-              echo "env_name=stag" >> "$GITHUB_OUTPUT"
-              ;;
-            prod)
-              echo "env_name=prod" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Unsupported branch: ${{ github.ref_name }}"
-              exit 1
-              ;;
-          esac
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "ENV=dev" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
+          #  echo "ENV=stag" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          #   echo "ENV=prod" >> $GITHUB_ENV
+          fi
 
-      - name: Build and push Docker image
-        id: meta
-        shell: bash
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          ENV_NAME: ${{ steps.vars.outputs.env_name }}
-          IMAGE_TAG: ${{ github.sha }}-${{ steps.vars.outputs.env_name }}
+          ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
+          IMAGE_TAG: ${{ github.sha }}-${{ env.ENV }}
+          REPOSITORY: ${{ env.REPOSITORY }}
+          ENV: ${{ env.ENV }}
         run: |
-          IMAGE_URI="$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG"
-          docker build --build-arg ENV="$ENV_NAME" -t "$IMAGE_URI" -t "$ECR_REGISTRY/$REPOSITORY:latest" .
-          docker push "$IMAGE_URI"
-          docker push "$ECR_REGISTRY/$REPOSITORY:latest"
-          echo "image=$IMAGE_URI" >> "$GITHUB_OUTPUT"
+          docker build --platform=linux/arm64/v8 -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg ENV=$ENV .
+          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   deploy:
-    name: Deploy to ECS
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      - name: Configure AWS credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ env.AWS_REGION }}
+          mask-password: 'true'
 
-      - name: Resolve ECS settings
-        id: ecs
-        shell: bash
+      - name: Determine environment and task definition
+        id: determine-env-and-task-def
         run: |
-          case "${{ github.ref_name }}" in
-            dev)
-              echo "task_def=dev-td-demo-cicd-github-action.json" >> "$GITHUB_OUTPUT"
-              echo "container_name=dev-ctn-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              echo "cluster_name=dev-cluster-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              echo "service_name=dev-service-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              ;;
-            stag)
-              echo "task_def=stag-td-demo-cicd-github-action.json" >> "$GITHUB_OUTPUT"
-              echo "container_name=stag-ctn-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              echo "cluster_name=stag-cluster-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              echo "service_name=stag-service-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              ;;
-            prod)
-              echo "task_def=prod-td-demo-cicd-github-action.json" >> "$GITHUB_OUTPUT"
-              echo "container_name=prod-ctn-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              echo "cluster_name=prod-cluster-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              echo "service_name=prod-service-demo-cicd-github-action" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Unsupported branch: ${{ github.ref_name }}"
-              exit 1
-              ;;
-          esac
+          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+            echo "ECS_TASK_DEFINITION_NAME=dev-td-demo-cicd-github-action.json" >> $GITHUB_ENV
+            echo "ECS_CONTAINER_NAME=dev-ctn-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_CLUSTER_NAME=dev-cluster-demo-cicd-github-action" >> $GITHUB_ENV
+            echo "ECS_SERVICE_NAME=dev-service-demo-cicd-github-action" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/stag" ]]; then
+          #  echo "ECS_TASK_DEFINITION_NAME=stag-td-demo-cicd-github-action.json" >> $GITHUB_ENV
+          #  echo "ECS_CONTAINER_NAME=stag-ctn-demo-cicd-github-action" >> $GITHUB_ENV
+          #  echo "ECS_CLUSTER_NAME=stag-cluster-demo-cicd-github-action" >> $GITHUB_ENV
+          #  echo "ECS_SERVICE_NAME=stag-service-demo-cicd-github-action" >> $GITHUB_ENV
+          # elif [[ "${{ github.ref }}" == "refs/heads/prod" ]]; then
+          #   echo "ECS_TASK_DEFINITION_NAME=your-ecs-task-definition-prod" >> $GITHUB_ENV
+          #   echo "ECS_CLUSTER_NAME=your-ecs-cluster-prod" >> $GITHUB_ENV
+          #   echo "ECS_SERVICE_NAME=your-ecs-service-prod" >> $GITHUB_ENV
+          fi
 
-      - name: Render ECS task definition
+      - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ steps.ecs.outputs.task_def }}
-          container-name: ${{ steps.ecs.outputs.container_name }}
+          task-definition: ${{ env.ECS_TASK_DEFINITION_NAME }}
+          container-name: ${{ env.ECS_CONTAINER_NAME }}
           image: ${{ needs.build.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ steps.ecs.outputs.service_name }}
-          cluster: ${{ steps.ecs.outputs.cluster_name }}
+          service: ${{ env.ECS_SERVICE_NAME }}
+          cluster: ${{ env.ECS_CLUSTER_NAME }}
           wait-for-service-stability: true
 
   health-check:
-    name: Health Check
     needs: deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
     steps:
-      - name: Resolve health check URL
-        id: url
-        shell: bash
-        run: |
-          case "${{ github.ref_name }}" in
-            dev)
-              echo "health_url=https://dev.tungphongdo89.click/health-check" >> "$GITHUB_OUTPUT"
-              ;;
-            stag)
-              echo "health_url=https://stag.tungphongdo89.click/health-check" >> "$GITHUB_OUTPUT"
-              ;;
-            prod)
-              echo "health_url=https://tungphongdo89.click/health-check" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "Unsupported branch: ${{ github.ref_name }}"
-              exit 1
-              ;;
-          esac
+      - name: Wait for deployment to stabilize
+        run: sleep 30  # Adjust the sleep time as necessary to allow the app to start
 
-      - name: Wait for app to become healthy
-        shell: bash
+      - name: Health Check
         run: |
-          URL="${{ steps.url.outputs.health_url }}"
-
-          for i in {1..12}; do
-            STATUS=$(curl -k -o /dev/null -s -w "%{http_code}" "$URL")
-            if [ "$STATUS" = "200" ]; then
-              echo "Health check passed: $URL"
+          URL="https://tungphongdo89.click/health-check"
+          for i in {1..10}; do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $URL)
+            if [ $STATUS -eq 200 ]; then
+              echo "Health check passed!"
               exit 0
+            else
+              echo "Health check failed with status $STATUS. Retrying in 10 seconds..."
+              sleep 10
             fi
-
-            echo "Attempt $i failed with HTTP $STATUS. Retrying in 10 seconds..."
-            sleep 10
           done
-
-          echo "Health check failed after multiple attempts: $URL"
+          echo "Health check failed after multiple attempts."
           exit 1
