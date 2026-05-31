@@ -20,7 +20,7 @@ RUN mvn -B clean package -DskipTests
 ##############################
 # Runtime stage
 ##############################
-FROM amazoncorretto:21
+FROM amazoncorret
 WORKDIR /app
 ENV JAVA_OPTS=""
 ENV SERVER_PORT=8088

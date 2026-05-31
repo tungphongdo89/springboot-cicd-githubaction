@@ -1,10 +1,12 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:28",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:199346865337:task-definition/dev-td-demo-cicd-github-action:36",
     "containerDefinitions": [
         {
             "name": "dev-ctn-demo-cicd-github-action",
             "image": "199346865337.dkr.ecr.ap-southeast-1.amazonaws.com/dev-demo-cicd-github-action-registry",
             "cpu": 0,
+            "memory": 1024,
+            "memoryReservation": 1024,
             "portMappings": [
                 {
                     "containerPort": 8088,
@@ -27,6 +29,10 @@
                 {
                     "name": "DB_PASSWORD",
                     "value": "tungtung"
+                },
+                {
+                    "name": "SPRING_PROFILES_ACTIVE",
+                    "value": "dev"
                 }
             ],
             "environmentFiles": [],
@@ -36,7 +42,7 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "/ecs/dev-td-demo-cicd-github-action",
+                    "awslogs-group": "/ecs/",
                     "awslogs-create-group": "true",
                     "awslogs-region": "ap-southeast-1",
                     "awslogs-stream-prefix": "ecs"
@@ -50,7 +56,7 @@
     "taskRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::199346865337:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 28,
+    "revision": 36,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -65,6 +71,9 @@
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
         },
         {
             "name": "com.amazonaws.ecs.capability.task-iam-role"
@@ -85,8 +94,8 @@
     "placementConstraints": [],
     "compatibilities": [
         "EC2",
-        "MANAGED_INSTANCES",
-        "FARGATE"
+        "FARGATE",
+        "MANAGED_INSTANCES"
     ],
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
@@ -97,7 +106,7 @@
     ],
     "cpu": "1024",
     "memory": "2048",
-    "registeredAt": "2026-05-31T08:16:18.838Z",
+    "registeredAt": "2026-05-31T13:48:33.879Z",
     "registeredBy": "arn:aws:iam::199346865337:root",
     "enableFaultInjection": false,
     "tags": []

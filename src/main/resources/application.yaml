@@ -1,9 +1,6 @@
 server:
   port: 8088
-#spring:
-#  profiles:
-#    active:
-#      - local
-#      - dev
-#      - stag
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
 
