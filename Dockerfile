@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/openjdk:21.0.2-jdk-oraclelinux8
+FROM public.ecr.aws/docker/library/amazoncorretto:21
 WORKDIR /app
 COPY target/springboot_cicd_githubaction.jar springboot_cicd_githubaction.jar
 EXPOSE 8088
