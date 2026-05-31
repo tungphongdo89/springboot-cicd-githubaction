@@ -25,7 +25,7 @@ public class PersonController {
         return ResponseEntity.ok(personService.createPerson(person));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePerson(@PathVariable("id") Long id) {
         return ResponseEntity.ok(personService.deletePerson(id));
     }

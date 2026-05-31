@@ -14,7 +14,7 @@
 	<name>springboot_cicd_githubaction</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<lombok.version>1.18.32</lombok.version>
 	</properties>
 	<dependencyManagement>
